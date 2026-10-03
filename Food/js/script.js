@@ -1,0 +1,2 @@
+function toggleMenu(){document.querySelector(".nav nav").classList.toggle("open");}
+document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll("input[type=file]").forEach(i=>i.addEventListener("change",()=>{if(i.files[0]&&i.files[0].size>5*1024*1024){alert("Maximum attachment size is 5MB.");i.value="";}}));});

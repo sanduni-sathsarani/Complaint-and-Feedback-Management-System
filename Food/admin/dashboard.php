@@ -1,0 +1,10 @@
+<?php require_once "../includes/auth.php"; require_admin();
+$db=db(); $counts=$db->query("SELECT COUNT(*) total, SUM(status='Submitted') submitted, SUM(status='Under Review') review, SUM(status='Investigating') investigating, SUM(status='Resolved') resolved FROM complaints")->fetch();
+$feedback=$db->query("SELECT ROUND(AVG(rating),1) avg_rating, COUNT(*) total FROM feedback")->fetch();
+$recent=$db->query("SELECT c.complaint_number,c.subject,c.status,c.created_at,cat.category_name FROM complaints c LEFT JOIN categories cat ON c.category_id=cat.category_id ORDER BY c.created_at DESC LIMIT 8")->fetchAll();
+include "../includes/header.php"; ?>
+<div class="dashboard container"><div class="dash-head"><div><span class="badge">ADMIN PANEL</span><h1>Welcome, <?= e($_SESSION["user_name"]) ?></h1></div><a class="btn btn-dark" href="../logout.php">Logout</a></div>
+<div class="stats"><div><small>Total Complaints</small><strong><?= $counts["total"] ?></strong></div><div><small>Submitted</small><strong><?= $counts["submitted"] ?: 0 ?></strong></div><div><small>Investigating</small><strong><?= $counts["investigating"] ?: 0 ?></strong></div><div><small>Resolved</small><strong><?= $counts["resolved"] ?: 0 ?></strong></div><div><small>Avg Feedback</small><strong><?= $feedback["avg_rating"] ?: "—" ?></strong></div></div>
+<div class="admin-links"><a href="complaints.php">Manage Complaints</a><a href="staff.php">Manage Staff</a><a href="categories.php">Categories</a><a href="feedback.php">Feedback</a><a href="reports.php">Reports</a></div>
+<div class="table-card"><h2>Recent Complaints</h2><table><tr><th>No.</th><th>Subject</th><th>Category</th><th>Status</th><th>Date</th></tr><?php foreach($recent as $r): ?><tr><td><a href="complaint_view.php?number=<?= urlencode($r["complaint_number"]) ?>"><?= e($r["complaint_number"]) ?></a></td><td><?= e($r["subject"]) ?></td><td><?= e($r["category_name"]) ?></td><td><span class="status"><?= e($r["status"]) ?></span></td><td><?= e($r["created_at"]) ?></td></tr><?php endforeach; ?></table></div></div>
+<?php include "../includes/footer.php"; ?>
